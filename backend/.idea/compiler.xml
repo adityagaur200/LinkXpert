@@ -12,15 +12,19 @@
         <module name="UserService" />
         <module name="PaymentService" />
         <module name="JobService" />
+        <module name="ApiGateway" />
+        <module name="ServiceDiscovery" />
         <module name="PostService" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ApiGateway" options="-parameters" />
       <module name="JobService" options="-parameters" />
       <module name="PaymentService" options="-parameters" />
       <module name="PostService" options="-parameters" />
+      <module name="ServiceDiscovery" options="-parameters" />
       <module name="UserService" options="-parameters" />
     </option>
   </component>
