@@ -6,6 +6,8 @@ import org.bson.types.Binary;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -22,7 +24,7 @@ public class PostService
     }
 
     //Creating service function (createPost) to create post.
-    public Post createPost(Long user_id, Binary content)
+    public Post createPost(Long user_id, Binary content,String info)
     {
         // Validate if user exists or not.
         UserDetailsDTO user= userDetailsService.getUserById(user_id);
@@ -36,6 +38,7 @@ public class PostService
         post.setLikedBy(new ArrayList<>());
         post.setLikes(0);
         post.setUser_id(user_id);
+        post.setInfo(info);
 
         return PostRepo.save(post);
     }
@@ -64,6 +67,31 @@ public class PostService
             post.setLikes(post.getLikes()-1);
         }
         return PostRepo.save(post);
+    }
+    //Service function (deletePost) to delete the post.
+    public Post deletePost(Long userId, String postId)
+    {
+        Optional<Post> optionalPost = PostRepo.findById(postId);
+
+        if (optionalPost.isEmpty()) {
+            throw new RuntimeException("Post not found with ID: " + postId);
+        }
+
+        Post post = optionalPost.get();
+
+        if (!post.getUser_id().equals(userId)) {
+            throw new RuntimeException("User is not authorized to delete this post");
+        }
+
+        // Delete post
+        PostRepo.deleteById(postId);
+        return post;
+    }
+
+    //This service function return all the post.
+    public List<Post> getAllPost()
+    {
+        return PostRepo.findAll();
     }
 }
 

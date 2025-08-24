@@ -18,6 +18,7 @@ public class Post
     private String post_id;
     private Long user_id;
     private Binary content;
+    private String info;
     private Instant createdAt=Instant.now();
     private Integer Likes;
     private List<String> LikedBy;
