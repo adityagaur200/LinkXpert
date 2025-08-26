@@ -1,5 +1,7 @@
 package com.example.PostService.Controller;
 
+import com.example.PostService.DTO.CreateDTO;
+import com.example.PostService.DTO.RequestDTO;
 import com.example.PostService.Model.Post;
 import com.example.PostService.Service.PostService;
 import org.springframework.http.ResponseEntity;
@@ -18,35 +20,44 @@ public class PostController {
         this.postService = postService;
     }
 
-    @PostMapping
+
+    //Controller for create post.
+    @PostMapping("/create")
     public ResponseEntity<Post> createPost(
-            @RequestParam Long user_id,
-            @RequestParam String content,
-            @RequestParam String info) {
-        Post post = postService.createPost(user_id,new org.bson.types.Binary(content.getBytes()),info);
+            @RequestBody CreateDTO createDTO) {
+        Post post = postService.createPost(createDTO.getUser_id(),createDTO.getContent(),createDTO.getInfo());
         return ResponseEntity.ok(post);
     }
 
+    //Controller to like post.
     @PostMapping("/like")
-    public ResponseEntity<Post> likePost(@RequestParam Long user_id,@RequestParam String post_id)
+    public ResponseEntity<Post> likePost(@RequestBody RequestDTO requestDTO)
     {
-        Post post =postService.likePost(user_id,post_id);
+        Post post =postService.likePost(requestDTO.getUser_id(),requestDTO.getPost_id());
         return ResponseEntity.ok(post);
     }
 
+    //Controller to delete post.
     @DeleteMapping("/delete")
-    public ResponseEntity<Post> deletePost(@RequestParam Long user_id,@RequestParam String post_id)
+    public ResponseEntity<Post> deletePost(@RequestBody RequestDTO requestDTO)
     {
-        Post post = postService.deletePost(user_id,post_id);
+        Post post = postService.deletePost(requestDTO.getUser_id(),requestDTO.getPost_id());
         return ResponseEntity.ok(post);
     }
 
+    //Controller to get all the post.
     @GetMapping("/get-post")
     public ResponseEntity<List<Post>> getAllPost()
     {
         return ResponseEntity.ok(postService.getAllPost());
     }
 
+    //Controller to get post by post_id
+    @GetMapping("/getpost/{post_id}")
+    public ResponseEntity<Post> getPost(@PathVariable String post_id)
+    {
+        return ResponseEntity.ok(postService.getPost(post_id));
+    }
 
 
 }

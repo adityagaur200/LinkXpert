@@ -12,7 +12,7 @@ public class WebClientConfig
     {
         return
                 builder
-                .baseUrl("http://localhost:8090")
+                .baseUrl("http://localhost:8060")
                 .build();
     }
 

@@ -2,7 +2,6 @@ package com.example.PostService.Service;
 import com.example.PostService.DTO.UserDetailsDTO;
 import com.example.PostService.Model.Post;
 import com.example.PostService.Repository.PostRepository;
-import org.bson.types.Binary;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public class PostService
     }
 
     //Creating service function (createPost) to create post.
-    public Post createPost(Long user_id, Binary content,String info)
+    public Post createPost(String user_id, String content, String info)
     {
         // Validate if user exists or not.
         UserDetailsDTO user= userDetailsService.getUserById(user_id);
@@ -44,7 +43,7 @@ public class PostService
     }
 
     //Service function (likePost) for like and unlike and add and remove liked users.
-    public Post likePost(Long user_id, String post_id)
+    public Post likePost(String user_id, String post_id)
     {
         UserDetailsDTO user= userDetailsService.getUserById(user_id);
         if(user==null)
@@ -69,29 +68,35 @@ public class PostService
         return PostRepo.save(post);
     }
     //Service function (deletePost) to delete the post.
-    public Post deletePost(Long userId, String postId)
+    public Post deletePost(String user_id, String post_id)
     {
-        Optional<Post> optionalPost = PostRepo.findById(postId);
+        Optional<Post> optionalPost = PostRepo.findById(post_id);
 
         if (optionalPost.isEmpty()) {
-            throw new RuntimeException("Post not found with ID: " + postId);
+            throw new RuntimeException("Post not found with ID: " + post_id);
         }
 
         Post post = optionalPost.get();
 
-        if (!post.getUser_id().equals(userId)) {
+        if (!post.getUser_id().equals(user_id)) {
             throw new RuntimeException("User is not authorized to delete this post");
         }
 
         // Delete post
-        PostRepo.deleteById(postId);
+        PostRepo.deleteById(post_id);
         return post;
     }
 
-    //This service function return all the post.
+    //This service function returns all the post.
     public List<Post> getAllPost()
     {
         return PostRepo.findAll();
+    }
+
+    // This service function returns a particular post.
+    public Post getPost(String postId)
+    {
+        return PostRepo.findById(postId).orElse(null);
     }
 }
 

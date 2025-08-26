@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -42,6 +43,8 @@ public class UserService {
 
         return userRepo.save(newUser);
     }
+
+    //login user function.
     public String verify(Users user) {
         Users foundUser = userRepo.findByUsername(user.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password"));
@@ -60,9 +63,16 @@ public class UserService {
 
         return null;
     }
-
+    //Get all user function.
     public List<Users> getAll()
     {
         return userRepo.findAll();
+    }
+
+
+    //Get user by user_id.
+    public Users getUserById(String user_id)
+    {
+        return userRepo.findById(user_id).orElse(null);
     }
 }
