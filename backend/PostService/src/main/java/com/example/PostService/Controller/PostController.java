@@ -1,8 +1,11 @@
 package com.example.PostService.Controller;
 
+import com.example.PostService.DTO.CommentDTO;
 import com.example.PostService.DTO.CreateDTO;
+import com.example.PostService.DTO.ReplyDTO;
 import com.example.PostService.DTO.RequestDTO;
 import com.example.PostService.Model.Post;
+import com.example.PostService.Service.CommentsService;
 import com.example.PostService.Service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +17,12 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final CommentsService commentsService;
 
     //Injecting PostService
-    public PostController(PostService postService) {
+    public PostController(PostService postService, CommentsService commentsService) {
         this.postService = postService;
+        this.commentsService = commentsService;
     }
 
 
@@ -58,6 +63,29 @@ public class PostController {
     {
         return ResponseEntity.ok(postService.getPost(post_id));
     }
+
+    //Controller to add comment on post.
+    @PostMapping("/addcomment/{post_id}")
+    public ResponseEntity<Post> addComment(@PathVariable String post_id , @RequestBody CommentDTO commentDto)
+    {
+        return ResponseEntity.ok(commentsService.addComment(post_id,commentDto));
+    }
+
+    //Controller to add replies on comments.
+    @PostMapping("/addreplies/{postId}")
+    public ResponseEntity<Post> addReply(@PathVariable String postId,@RequestBody ReplyDTO replyDTO)
+    {
+        return ResponseEntity.ok(commentsService.addReplies(postId, replyDTO.getComment_id(), replyDTO.getUser_id(), replyDTO.getText()));
+    }
+
+    //Controller to get all the comments on the post.
+    @GetMapping("/getComments/{postId}")
+    public ResponseEntity<List<Post>> getAllComments(@PathVariable String postId)
+    {
+        return ResponseEntity.ok(commentsService.getAllComments(postId));
+    }
+
+
 
 
 }
