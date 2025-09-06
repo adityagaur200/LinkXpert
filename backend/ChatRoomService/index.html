@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h2>WebSocket Chat</h2>
+    <div>
+      <input id="username" placeholder="Enter username">
+      <button onclick="register()">Register</button>
+    </div>
+
+    <div>
+      <input id="room" placeholder="Enter room name">
+      <button onclick="joinRoom()">Join Room</button>
+    </div>
+
+    <div>
+      <input id="msg" placeholder="Message">
+      <button onclick="sendRoomMessage()">Send to Room</button>
+    </div>
+
+    <div>
+      <input id="targetId" placeholder="Target User ID">
+      <input id="directMsg" placeholder="Direct message">
+      <button onclick="sendDirectMessage()">Send Direct</button>
+    </div>
+
+    <h3>Messages</h3>
+    <ul id="messages"></ul>
+
+    <h3>Users</h3>
+    <ul id="userList"></ul>
+
+    <script>
+      const socket = new WebSocket("ws://localhost:7070");
+      let myId;
+
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.type === "REGISTERED") {
+          myId = data.userId;
+          addMessage("You registered with ID: " + myId);
+        }
+
+        if (data.type === "JOINED_ROOM") {
+          addMessage("You joined room: " + data.room);
+        }
+
+        if (data.type === "ROOM_MESSAGE") {
+          addMessage(data.message);
+        }
+
+        if (data.type === "DIRECT_MESSAGE") {
+          addMessage(`(DM from ${data.from}): ${data.message}`);
+        }
+
+        if (data.type === "USER_LIST") {
+          document.getElementById("userList").innerHTML = "";
+          data.users.forEach(u => {
+            const li = document.createElement("li");
+            li.textContent = `${u.username} (ID: ${u.id}, Room: ${u.room || "None"})`;
+            document.getElementById("userList").appendChild(li);
+          });
+        }
+      };
+
+      function register() {
+        const username = document.getElementById("username").value;
+        socket.send(JSON.stringify({ type: "REGISTER", username }));
+      }
+
+      function joinRoom() {
+        const room = document.getElementById("room").value;
+        socket.send(JSON.stringify({ type: "JOIN_ROOM", room }));
+      }
+
+      function sendRoomMessage() {
+        const msg = document.getElementById("msg").value;
+        socket.send(JSON.stringify({ type: "ROOM_MESSAGE", message: msg }));
+      }
+
+      function sendDirectMessage() {
+        const targetId = document.getElementById("targetId").value;
+        const msg = document.getElementById("directMsg").value;
+        socket.send(JSON.stringify({ type: "DIRECT_MESSAGE", targetId, message: msg }));
+      }
+
+      function addMessage(text) {
+        const li = document.createElement("li");
+        li.textContent = text;
+        document.getElementById("messages").appendChild(li);
+      }
+    </script>
+  </body>
+</html>
